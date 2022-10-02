@@ -1,0 +1,32 @@
+install.packages("zoo")
+install.packages("ggrepel")
+install.packages("ggthemes")
+
+library(tidyverse)
+library(zoo)
+library(ggplot2)
+library(ggrepel)
+library(ggthemes)
+
+df_0 <- read.csv("~/Downloads/18100205-eng/18100205.csv")
+df_1 <- subset(df_0, GEO == "Toronto, Ontario") %>% 
+  subset(New.housing.price.indexes == "House only")  #Only Montreal, Quebec prices, House Only
+df_2 <- df_1 %>% mutate(DATE_FORMAT = as.yearmon(REF_DATE)) %>% mutate(NUMBERS=as.numeric(DATE_FORMAT))
+
+View(df_2)
+
+ggplot(df_2, aes(x=DATE_FORMAT, y=VALUE)) +
+  geom_line() + theme_economist() + xlab("") +
+  ggtitle("Evoluting of Housing Prices in Toronto") +
+  geom_smooth(method='lm', formula=y~x)
+
+fit <- with( df_2, 
+             lm(VALUE ~ DATE_FORMAT))
+
+summary(fit)
+abline(fit)
+fit$coefficients
+
+X=2022.583
+House_Price = -3830.35839 + 1.94319*X
+House_Price
